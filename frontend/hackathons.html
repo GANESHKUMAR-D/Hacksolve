@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hackathons - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: blobMove 25s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-20%, -20%) rotate(0deg); }
+            100% { transform: translate(25%, 25%) rotate(360deg); }
+        }
+
+        .top-bar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hacks-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .hack-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 25px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary-light);
+            margin-right: 8px;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        .join-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .join-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .join-btn:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: default;
+            border: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -12s;"></div>
+
+    <div class="top-bar">
+
+        <div style="display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer;" onclick="window.location.href='/feed'">
+            <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+        </div>
+        <span class="page-title">Hackathons</span>
+    </div>
+
+    <div style="text-align:center; padding: 30px 20px;">
+        <h2 style="margin-bottom: 8px; font-weight: 700; background: linear-gradient(to right, #fff, #a29bfe); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Innovate & Build 🚀</h2>
+        <p style="color: var(--text-muted); font-size: 1rem;">Discover hackathons that matter.</p>
+    </div>
+
+    <div id="hackathonList" style="padding: 0 15px;"></div>
+
+    <div class="navbar">
+        <a href="/feed" class="nav-icon">🏠</a>
+        <a href="/hackathons" class="nav-icon active">🏆</a>
+        <a href="/feed" class="nav-icon">➕</a>
+        <a href="/my-applications" class="nav-icon">📁</a>
+        <a href="/profile" class="nav-icon">👤</a>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+
+        async function loadHackathons() {
+            const res = await fetch("/api/hackathons");
+            const data = await res.json();
+            const list = document.getElementById("hackathonList");
+
+            if (data.length === 0) {
+                list.innerHTML = "<p style='text-align:center; color:var(--text-muted); margin-top:50px; font-weight:500;'>No active hackathons found. Stay tuned! 🕒</p>";
+                return;
+            }
+
+            list.innerHTML = "";
+            data.forEach(h => {
+                const isJoined = h.participants && h.participants.includes(user.id);
+                list.innerHTML += `
+                <div class="hackathon-card card-3d" onclick="window.location.href='/hackathon-details?id=${h._id}'" style="cursor:pointer;">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 12px;">
+                        <h3 style="margin:0; font-size:1.3em; font-weight:700; color:white;">${h.name}</h3>
+                        <span class="date-badge">${new Date(h.startDate).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</span>
+                    </div>
+                    
+                    <p style="color:var(--primary-light); font-weight:700; font-size:0.9em; margin: 8px 0;">✨ Organized by ${h.organizerName}</p>
+                    
+                    <div style="margin: 15px 0; display:flex; align-items:center; gap:5px;">
+                        <span class="mode-badge">${h.mode}</span>
+                        <span style="color:var(--text-muted); font-size:0.85em; display:flex; align-items:center; gap:4px;"> 📍 ${h.location}</span>
+                    </div>
+                    
+                    <p style="margin: 15px 0; font-size:0.95em; color:rgba(255,255,255,0.8); line-height:1.6;">${h.problemStatement ? h.problemStatement.substring(0, 120) + '...' : h.description.substring(0, 120) + '...'}</p>
+                    
+                    <button onclick="event.stopPropagation(); joinHackathon('${h._id}', this)" 
+                        class="join-btn"
+                        ${isJoined ? 'disabled' : ''}>
+                        ${isJoined ? 'Applied ✅' : 'Apply Now'}
+                    </button>
+                    ${isJoined ? `<p style='text-align:center; font-size:0.85em; color:var(--primary-light); margin-top:12px; font-weight:600;'>You've successfully applied!</p>` : ''}
+                </div>
+                `;
+            });
+        }
+
+        async function joinHackathon(id, btn) {
+            const res = await fetch(`/api/hackathons/${id}/join`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: user.id })
+            });
+            const data = await res.json();
+            if (data.success) {
+                btn.innerText = "Applied ✅";
+                btn.style.background = "#ccc";
+                btn.disabled = true;
+                alert("Application submitted successfully!");
+            }
+        }
+
+        loadHackathons();
+    </script>
+</body>
+
+</html>

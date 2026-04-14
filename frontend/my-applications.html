@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: blobMove 25s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-20%, -20%) rotate(0deg); }
+            100% { transform: translate(25%, 25%) rotate(360deg); }
+        }
+
+        .top-bar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .app-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .app-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-3d);
+            border-color: rgba(108, 92, 231, 0.2);
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        .org-name {
+            font-size: 0.85em;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-view {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: rgba(108, 92, 231, 0.05);
+            border: 1px solid rgba(108, 92, 231, 0.1);
+            border-radius: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9em;
+            transition: 0.3s;
+        }
+
+        .btn-view:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -10s;"></div>
+
+    <div class="top-bar">
+        <div style="display:flex; align-items:center; gap: 20px;">
+		
+        <div style="display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer;" onclick="window.location.href='/feed'">
+            <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+        </div>
+		<span class="header-title">My Applications</span>
+		</div>
+    </div>
+
+    <div class="app-container">
+        <div id="appList">
+            <!-- Applications injected here -->
+        </div>
+    </div>
+
+    <div class="navbar">
+        <a href="/feed" class="nav-icon">🏠</a>
+        <a href="/hackathons" class="nav-icon">🏆</a>
+        <a href="/feed" class="nav-icon">➕</a>
+        <a href="/my-applications" class="nav-icon active">📁</a>
+        <a href="/profile" class="nav-icon">👤</a>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+
+        async function loadApplications() {
+            try {
+                const res = await fetch(`/api/user/${user.id}/hackathons`);
+                const data = await res.json();
+                const list = document.getElementById("appList");
+
+                if (data.length === 0) {
+                    list.innerHTML = `
+                        <div style="text-align:center; margin-top:80px; padding: 40px;" class="app-card">
+                            <span style="font-size:3.5em;">📂</span>
+                            <h3 style="margin-top:20px; color:var(--text-main);">No applications yet</h3>
+                            <p style="color:var(--text-muted); margin-top:10px; font-size: 0.95em;">Explore exciting hackathons and start your journey!</p>
+                            <a href="/hackathons" class="btn-view" style="display:inline-block; width:auto; padding: 12px 30px; margin-top: 20px;">Explore Hackathons</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = "";
+                data.forEach(h => {
+                    list.innerHTML += `
+                        <div class="app-card fade-in">
+                            <div class="app-header">
+                                <div style="flex:1;">
+                                    <div class="org-name">${h.organizerName}</div>
+                                    <h3 style="margin:0; font-size:1.2em; color:var(--text-main);">${h.name}</h3>
+                                </div>
+                                <span class="status-badge">Applied</span>
+                            </div>
+                            <div style="font-size:0.9em; color:var(--text-muted); display:flex; flex-direction:column; gap:8px;">
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>📅</span> Starts: ${new Date(h.startDate).toLocaleDateString()}
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>📍</span> ${h.location}
+                                </div>
+                            </div>
+                            <a href="/hackathon-details?id=${h._id}" class="btn-view">View Dashboard</a>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error("Error loading applications:", err);
+            }
+        }
+
+        loadApplications();
+    </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Complaints</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Global HackSolve Branding -->
+    <a href="/feed" style="position: absolute; top: 25px; left: 30px; display: flex; align-items: center; gap: 12px; text-decoration: none; z-index: 10000;">
+        <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+    </a>
+
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -10s; opacity: 0.1;"></div>
+
+    <div class="container-3d" style="width: 600px;">
+        <h2 style="margin-bottom: 8px; font-weight: 700; background: linear-gradient(to right, #fff, #a29bfe); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">My Complaints</h2>
+
+        <div id="complaintList" style="margin-top:20px; max-height: 500px; overflow-y: auto; text-align: left;"></div>
+
+        <button onclick="window.location.href='/home'" style="margin-top:20px; background: #636e72;">Back to
+            Home</button>
+    </div>
+
+    <!-- BOTTOM NAVBAR -->
+    <div class="navbar"
+        style="position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: white; border-top: 1px solid #dbdbdb; display: flex; justify-content: space-around; align-items: center; z-index: 1000;">
+        <a href="/feed" style="text-decoration: none; font-size: 1.5em;">🏠</a>
+        <a href="/hackathons" style="text-decoration: none; font-size: 1.5em;">🏆</a>
+        <a href="/create-post.html" style="text-decoration: none; font-size: 1.5em;">➕</a>
+        <a href="/view-my-complaints" style="text-decoration: none; font-size: 1.5em;">👤</a>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+
+        async function loadComplaints() {
+            const res = await fetch("/my-complaints/" + user.id);
+            const complaints = await res.json();
+            const list = document.getElementById("complaintList");
+            list.innerHTML = "";
+
+            if (complaints.length === 0) {
+                list.innerHTML = "<p style='text-align:center;'>No complaints found.</p>";
+                return;
+            }
+
+            complaints.forEach(c => {
+                // Comments HTML
+                let commentsHtml = "";
+                if (c.comments) {
+                    c.comments.forEach(com => {
+                        commentsHtml += `<div style="font-size:0.85em; background:rgba(0,0,0,0.05); padding:5px; margin:5px 0; border-radius:5px;">
+                            <strong>${com.username}</strong>: ${com.text}
+                        </div>`;
+                    });
+                }
+
+                list.innerHTML += `
+                <div style="background:var(--glass-bg); padding:25px; margin:20px 0; border-radius:24px; color:var(--text-main); border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft); backdrop-filter: blur(15px);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="color:var(--primary-light); text-transform:uppercase; letter-spacing:1px; font-size:0.85em;">${c.category}</b> 
+                        <span style="background:${c.status == 'Resolved' ? 'rgba(0,184,148,0.2)' : 'rgba(230,126,34,0.2)'}; color:${c.status == 'Resolved' ? '#00b894' : '#e67e22'}; padding:6px 14px; border-radius:12px; font-size:0.75em; font-weight:800;">${c.status}</span>
+                    </div>
+                    <div style="font-size:0.85em; color:var(--text-muted); margin: 10px 0;">${new Date(c.date).toLocaleDateString()}</div>
+                    
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}" target="_blank" style="color:var(--primary-light); text-decoration:none; font-weight: 600; font-size: 0.9em; display: flex; align-items: center; gap: 5px;">📍 ${c.address}</a> 
+                    <p style="margin-top:15px; line-height: 1.6; color: rgba(255,255,255,0.9);">${c.description}</p>
+                    
+                    ${c.image_path ? `<img src="/${c.image_path}" style="width:100%; max-height: 300px; object-fit: cover; border-radius:18px; margin-top:15px; border: 1px solid var(--glass-border);">` : ""}
+                    
+                    <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--glass-border); display: flex; align-items: center; gap: 20px;">
+                        <span style="color:var(--primary-light); font-weight:700; font-size: 0.9em;">👍 ${c.upvotes ? c.upvotes.length : 0} Upvotes</span>
+                        <span style="color:var(--text-muted); font-size: 0.9em;">💬 ${c.comments ? c.comments.length : 0} Comments</span>
+                    </div>
+
+                    <div style="margin-top:15px; max-height:150px; overflow-y:auto; padding-right: 5px;">
+                        ${commentsHtml || "<p style='color:var(--text-muted); font-size:0.85em; font-style:italic;'>No replies yet.</p>"}
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top: 15px;">
+                        <input type="text" id="comment-${c._id}" placeholder="Type a reply..." style="margin:0; padding:12px 15px; font-size:0.9em; border:1px solid var(--glass-border); flex-grow:1; background: rgba(255,255,255,0.03); border-radius: 12px; color: white; outline: none;">
+                        <button onclick="postComment('${c._id}')" style="width:auto; padding:10px 20px; font-size:0.85em; background:var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Send</button>
+                    </div>
+
+                    <div style="text-align:right; margin-top:20px;">
+                        <button onclick="deleteComplaint('${c._id}')" style="width:auto; padding:8px 15px; font-size:0.8em; background: rgba(255, 118, 117, 0.1); color: #ff7675; border: 1px solid rgba(255, 118, 117, 0.2); border-radius: 10px; cursor: pointer; font-weight: 600;">Delete Submission</button>
+                    </div>
+                </div>
+                `;
+            });
+        }
+
+        async function postComment(id) {
+            const text = document.getElementById(`comment-${id}`).value;
+            if (!text) return;
+
+            await fetch("/api/complaint/comment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ complaint_id: id, user_id: user.id, username: user.name, text })
+            });
+            loadComplaints();
+        }
+
+        async function deleteComplaint(id) {
+            if (!confirm("Remove this complaint?")) return;
+            const res = await fetch("/delete-complaint/" + id, { method: "DELETE" });
+            const data = await res.json();
+            if (data.success) loadComplaints();
+        }
+
+        loadComplaints();
+    </script>
+</body>
+
+</html>

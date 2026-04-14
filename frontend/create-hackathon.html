@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Hackathon - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: blobMove 25s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% {
+                transform: translate(-20%, -20%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(25%, 25%) rotate(360deg);
+            }
+        }
+
+        .container-3d {
+            max-width: 650px;
+            margin: 50px auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 45px;
+            border-radius: 32px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-3d);
+            position: relative;
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 2.2em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: var(--text-main);
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            background: rgba(108, 92, 231, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            font-size: 0.95em;
+            color: var(--text-main);
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.1);
+        }
+
+        textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        .btn-launch {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 35px;
+            font-size: 1.05em;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-launch:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            color: var(--text-muted);
+            border: none;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-cancel:hover {
+            color: var(--text-main);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Global HackSolve Branding -->
+    <a href="/feed" style="position: absolute; top: 25px; left: 30px; display: flex; align-items: center; gap: 12px; text-decoration: none; z-index: 10000;">
+        <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+    </a>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -12s;"></div>
+
+    <div class="container-3d fade-in">
+        <h2>Host a Hackathon 🏆</h2>
+        <p style="color: var(--text-muted); font-size: 1em; margin-bottom: 25px; font-weight: 500;">Fill in the details
+            below to launch your event.</p>
+
+        <form id="hackathonForm">
+            <label>Event Name</label>
+            <input type="text" id="hName" placeholder="e.g. Innovate 2026" required>
+
+            <label>Organizer Name (College/Company)</label>
+            <input type="text" id="hOrg" placeholder="e.g. MIT University / Google Developers" required>
+
+            <label>Problem Statement (Briefly)</label>
+            <input type="text" id="hProb" placeholder="e.g. Reducing Urban Traffic using AI" required>
+
+            <label>Detailed Description & Rules</label>
+            <textarea id="hDesc" placeholder="Describe the event, rules, and prizes..." required></textarea>
+
+            <div class="grid-2">
+                <div>
+                    <label>Start Date</label>
+                    <input type="date" id="hStart" required>
+                </div>
+                <div>
+                    <label>End Date</label>
+                    <input type="date" id="hEnd" required>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div>
+                    <label>Reporting Time</label>
+                    <input type="text" id="hTime" placeholder="e.g. 09:00 AM" required>
+                </div>
+                <div>
+                    <label>Mode</label>
+                    <select id="hMode">
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+            </div>
+
+            <label>Venue / Platform Link</label>
+            <input type="text" id="hLoc" placeholder="e.g. Hall A, Central Campus / Zoom Link" required>
+
+            <label>Registration Deadline</label>
+            <input type="date" id="hDeadline" required>
+
+            <label>Category</label>
+            <select id="hCategory" required>
+                <option value="Technology">Technology</option>
+                <option value="Innovation">Innovation</option>
+                <option value="Society">Society</option>
+                <option value="Environment">Environment</option>
+                <option value="Health">Health</option>
+                <option value="Education">Education</option>
+                <option value="Open Innovation">Open Innovation</option>
+            </select>
+
+            <button type="submit" class="btn-launch">Launch Hackathon</button>
+            <button type="button" onclick="window.location.href='/hackathons'" class="btn-cancel">Cancel and Go
+                Back</button>
+        </form>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || user.role !== 'admin') window.location.href = "/";
+
+        document.getElementById("hackathonForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const body = {
+                name: document.getElementById("hName").value,
+                organizerName: document.getElementById("hOrg").value,
+                problemStatement: document.getElementById("hProb").value,
+                description: document.getElementById("hDesc").value,
+                startDate: document.getElementById("hStart").value,
+                endDate: document.getElementById("hEnd").value,
+                time: document.getElementById("hTime").value,
+                mode: document.getElementById("hMode").value,
+                location: document.getElementById("hLoc").value,
+                registrationDeadline: document.getElementById("hDeadline").value,
+                category: document.getElementById("hCategory").value,
+                organizerId: user.id
+            };
+
+            const res = await fetch("/api/hackathons", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert("Hackathon Launched Successfully!");
+                window.location.href = "/hackathons";
+            } else {
+                alert("Error: " + data.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

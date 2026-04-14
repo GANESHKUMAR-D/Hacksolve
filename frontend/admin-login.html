@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Access - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            box-shadow: var(--shadow-3d);
+            position: relative;
+            z-index: 10;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(150px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.12;
+            animation: blobMove 30s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-20%, -20%) rotate(0deg); }
+            100% { transform: translate(30%, 30%) rotate(360deg); }
+        }
+
+        h2 {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95em;
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.8em;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 1em;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(108, 92, 231, 0.35);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -15%; right: -15%; background: var(--accent); animation-delay: -15s;"></div>
+
+    <div class="login-card fade-in">
+        <h2>Admin Portal</h2>
+        <p class="subtitle">Enter your system credentials</p>
+
+        <form id="adminLoginForm">
+            <div class="input-group">
+                <label>Admin Username</label>
+                <input type="text" id="username" placeholder="e.g. system_admin" required>
+            </div>
+            <div class="input-group">
+                <label>Security Key (Password)</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-login">Verify & Access</button>
+        </form>
+
+        <a href="/" class="back-link">← Back to Main Platform</a>
+    </div>
+
+    <script>
+        document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password, role: 'admin' })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem("user", JSON.stringify(data.user));
+                    window.location.href = "/admin-dashboard";
+                } else {
+                    alert("Verification Failed: " + data.message);
+                    btn.innerText = "Verify & Access";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Server Connection Error");
+                btn.innerText = "Verify & Access";
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

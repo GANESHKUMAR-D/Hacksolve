@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Details - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 70px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: blobMove 25s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-20%, -20%) rotate(0deg); }
+            100% { transform: translate(25%, 25%) rotate(360deg); }
+        }
+
+        .details-container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 32px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 1.1em;
+            color: var(--text-main);
+            margin-top: 35px;
+            border-bottom: 2px solid var(--glass-border);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .announcement-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .announcement-box:hover {
+            transform: translateX(5px);
+            background: rgba(108, 92, 231, 0.08);
+        }
+
+        .meta-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            border: 1px solid var(--glass-border);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+        }
+
+        .meta-item b {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .btn-apply {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.05em;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-apply:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-apply:disabled {
+            background: #00b894;
+            opacity: 0.8;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        .top-bar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            background: rgba(108, 92, 231, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            cursor: pointer;
+            margin-right: 20px;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .header-title {
+            font-size: 1.6em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-explore {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -10s;"></div>
+
+    <div class="top-bar">
+
+        <div style="display: flex; align-items: center; gap: 12px; text-decoration: none; cursor: pointer;" onclick="window.location.href='/feed'">
+            <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+        </div>
+        <button class="back-btn" onclick="window.history.back()">←</button>
+        <span class="header-title" id="headerTitle">Event Details</span>
+    </div>
+
+    <div class="details-container fade-in">
+        <h1 id="hName" style="margin: 0 0 8px 0; font-size: 2.2em; font-weight: 800; color: var(--text-main);">Loading...</h1>
+        <p id="hOrg" style="color: var(--primary); font-weight: 700; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 0.5px;">Loading Organizer...</p>
+
+        <div class="meta-info">
+            <div class="meta-item">📅 <b>Start:</b> <span id="hStart">...</span></div>
+            <div class="meta-item">🏁 <b>End:</b> <span id="hEnd">...</span></div>
+            <div class="meta-item">📍 <b>Mode:</b> <span id="hMode">...</span></div>
+            <div class="meta-item">🏢 <b>Venue:</b> <span id="hLoc">...</span></div>
+            <div class="meta-item" style="grid-column: span 2;">⏰ <b style="color:#ff7675;">Deadline:</b> <span id="hDeadline" style="color:#ff7675; font-weight:800;">...</span></div>
+        </div>
+
+        <div id="applyArea">
+            <button id="joinBtn" class="btn-apply" onclick="goToApplyPage()">Apply for Admission</button>
+            <button id="exploreBtn" class="btn-apply btn-explore" style="display:none;" onclick="explorePosts()">🚀 Explore Hackathon Posts</button>
+        </div>
+
+        <div class="section-title">Problem Statement</div>
+        <p id="hProb" style="font-weight: 600; color:var(--text-main); font-size: 1.1em; line-height: 1.5;"></p>
+
+        <div class="section-title">Event Description</div>
+        <div id="hDesc" style="font-size: 1em; line-height: 1.7; color: var(--text-muted); white-space: pre-line;"></div>
+
+        <div id="announcementSection" style="display:none;">
+            <div class="section-title">Announcements 📢</div>
+            <div id="announcementList"></div>
+
+            <div id="adminControls" style="display:none; margin-top:30px; padding-top: 20px; border-top: 1px dashed var(--glass-border);">
+                <textarea id="announcementInput" placeholder="Write a new announcement for participants..." style="width:100%; padding:15px; border-radius:18px; border:1px solid var(--glass-border); background: rgba(255,255,255,0.5); min-height: 100px; font-family: inherit; font-size: 0.95em;"></textarea>
+                <button onclick="postAnnouncement()" style="padding:12px 25px; background:var(--primary); color:white; border:none; border-radius:14px; margin-top:15px; cursor:pointer; font-weight: 700; transition: 0.3s;" class="professional-btn">Post Announcement</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const hackId = urlParams.get('id');
+
+        async function loadDetails() {
+            try {
+                const res = await fetch(`/api/hackathons/${hackId}`);
+                const h = await res.json();
+
+                if (!h) return;
+
+                document.getElementById("hName").innerText = h.name;
+                document.getElementById("hOrg").innerText = `Organized by ${h.organizerName}`;
+                document.getElementById("hStart").innerText = new Date(h.startDate).toLocaleDateString();
+                document.getElementById("hEnd").innerText = new Date(h.endDate).toLocaleDateString();
+                document.getElementById("hMode").innerText = h.mode;
+                document.getElementById("hLoc").innerText = h.location;
+                document.getElementById("hDeadline").innerText = new Date(h.registrationDeadline).toLocaleDateString();
+                document.getElementById("hProb").innerText = h.problemStatement;
+                document.getElementById("hDesc").innerText = h.description;
+
+                const isJoined = h.participants && h.participants.includes(user.id);
+                const joinBtn = document.getElementById("joinBtn");
+
+                if (isJoined || (user.role === 'admin' && h.organizerId === user.id)) {
+                    if (isJoined) {
+                        joinBtn.innerText = "Applied Successfully ✅";
+                        joinBtn.disabled = true;
+                    } else {
+                        joinBtn.style.display = 'none';
+                    }
+                    document.getElementById("exploreBtn").style.display = "block";
+                    document.getElementById("exploreBtn").dataset.category = h.category;
+                    document.getElementById("announcementSection").style.display = "block";
+                }
+
+                const annList = document.getElementById("announcementList");
+                annList.innerHTML = h.announcements.length === 0 ? "<p style='color:var(--text-muted); font-style:italic; padding: 10px;'>No announcements yet.</p>" : "";
+                [...h.announcements].reverse().forEach(ann => {
+                    annList.innerHTML += `
+                        <div class="announcement-box fade-in">
+                            <div style="font-weight: 500; color: var(--text-main); line-height: 1.5;">${ann.text}</div>
+                            <div style="font-size:0.75em; margin-top:10px; color:var(--text-muted); font-weight: 600;">⏰ ${new Date(ann.date).toLocaleString()}</div>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        function goToApplyPage() {
+            window.location.href = `/apply-hackathon?id=${hackId}`;
+        }
+
+        function explorePosts() {
+            const category = document.getElementById("exploreBtn").dataset.category;
+            if (category) {
+                window.location.href = `/feed?category=${encodeURIComponent(category)}`;
+            } else {
+                window.location.href = `/feed`;
+            }
+        }
+
+        async function postAnnouncement() {
+            const text = document.getElementById("announcementInput").value;
+            if (!text) return;
+            const res = await fetch(`/api/hackathons/${hackId}/announcements`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById("announcementInput").value = "";
+                loadDetails();
+            }
+        }
+
+        loadDetails();
+    </script>
+</body>
+</html>

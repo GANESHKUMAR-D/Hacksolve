@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home - Complaint Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Global HackSolve Branding -->
+    <a href="/feed" style="position: absolute; top: 25px; left: 30px; display: flex; align-items: center; gap: 12px; text-decoration: none; z-index: 10000;">
+        <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+    </a>
+
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -10s; opacity: 0.1;"></div>
+
+    <div class="container-3d" style="width: 600px; margin: 60px auto;">
+        <h2 style="margin-bottom: 8px; font-weight: 700; background: linear-gradient(to right, #fff, #a29bfe); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Innovate & Build 🚀</h2>
+        <h2 style="background: linear-gradient(135deg, #fff, var(--primary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5em; font-weight: 800;">Welcome, <span id="usernameDisplay">User</span></h2>
+        <p style="margin-bottom:35px; color: var(--text-muted); font-weight:500;">What would you like to do today?</p>
+
+        <!-- PROFILE CARD -->
+        <div
+            style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; margin-bottom: 35px; text-align: left; display:flex; justify-content:space-between; align-items:center; border: 1px solid var(--glass-border);">
+            <div>
+                <p style="margin:5px 0; font-size:0.9em; color: var(--text-muted);"><strong>Username:</strong> <span id="pUser" style="color: var(--text-main); font-weight: 600;"></span></p>
+                <p style="margin:5px 0; font-size:0.9em; color: var(--text-muted);"><strong>Phone:</strong> <span id="pPhone" style="color: var(--text-main); font-weight: 600;"></span></p>
+            </div>
+            <button onclick="openEdit()"
+                style="width: auto; padding: 10px 20px; font-size: 0.85em; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer;">Edit Profile</button>
+        </div>
+
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+
+            <div onclick="window.location.href='/dashboard'"
+                style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 24px; width: 160px; cursor: pointer; transition: 0.3s; border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft); text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 12px;">📝</div>
+                <strong style="color: var(--text-main); font-size: 0.95em;">Submit Complaint</strong>
+            </div>
+
+            <div onclick="window.location.href='/view-my-complaints'"
+                style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 24px; width: 160px; cursor: pointer; transition: 0.3s; border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft); text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 12px;">📂</div>
+                <strong style="color: var(--text-main); font-size: 0.95em;">My Complaints</strong>
+            </div>
+
+            <div onclick="window.location.href='/view-other-complaints'"
+                style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 24px; width: 160px; cursor: pointer; transition: 0.3s; border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft); text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 12px;">🌍</div>
+                <strong style="color: var(--text-main); font-size: 0.95em;">Other Complaints</strong>
+            </div>
+
+        </div>
+
+        <button onclick="logout()"
+            style="background: linear-gradient(90deg, #ff7675, #d63031); width: 200px; margin-top: 40px;">Logout</button>
+    </div>
+
+    <!-- EDIT PROFILE MODAL -->
+    <div id="editModal" class="container-3d"
+        style="width: 400px; display: none; position: absolute; z-index: 10; top: 15%;">
+        <h3>Edit Profile</h3>
+        <input type="text" id="editName" placeholder="Full Name" autocomplete="off">
+        <input type="text" id="editPhone" placeholder="Phone Number" autocomplete="off">
+        <input type="password" id="editPass" placeholder="New Password (leave blank to keep)" autocomplete="off">
+
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="saveProfile()" style="background: #00b894;">Save Changes</button>
+            <button onclick="closeEdit()" style="background: #636e72;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+        document.getElementById("usernameDisplay").innerText = user.name.charAt(0).toUpperCase() + user.name.slice(1);
+
+        // Initialize Profile Data
+        document.getElementById("pUser").innerText = "@" + user.username;
+        document.getElementById("pPhone").innerText = user.phone || "N/A";
+
+        function openEdit() {
+            document.getElementById("editModal").style.display = "block";
+            document.getElementById("editName").value = user.name;
+            document.getElementById("editPhone").value = user.phone || "";
+        }
+
+        function closeEdit() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        async function saveProfile() {
+            const name = document.getElementById("editName").value;
+            const phone = document.getElementById("editPhone").value;
+            const password = document.getElementById("editPass").value;
+
+            const res = await fetch("/api/update-profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: user.id, name, phone, password })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert("Profile Updated!");
+                localStorage.setItem("user", JSON.stringify(data.user));
+                location.reload();
+            } else {
+                alert("Update failed: " + (data.message || data.error));
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "/";
+        }
+    </script>
+</body>
+
+</html>

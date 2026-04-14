@@ -1,0 +1,205 @@
+/* Modern Premium Landing Styles for HackSolve */
+:root {
+    --primary: #818cf8;
+    --primary-glow: rgba(129, 140, 248, 0.4);
+    --bg-darker: #020617;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+}
+
+.landing-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    padding: 0 20px;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-hero.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+/* Grid Background */
+.grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(129, 140, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(129, 140, 248, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.grid-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, transparent 0%, var(--bg-darker) 80%);
+}
+
+/* Logo and Navbar */
+.nav-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(to right, #fff, var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+}
+
+.nav-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: 0.3s;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-cta {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+/* Hero Content */
+.hero-tag {
+    background: rgba(129, 140, 248, 0.1);
+    border: 1px solid var(--primary-glow);
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.hero-title {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 25px;
+    letter-spacing: -3px;
+    color: #fff;
+    max-width: 900px;
+}
+
+.hero-subtitle {
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    max-width: 650px;
+    margin-bottom: 45px;
+    line-height: 1.6;
+}
+
+.get-started-btn {
+    background: #fff;
+    color: #000;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    width: auto;
+    transition: 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+}
+
+.get-started-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 0 60px rgba(255, 255, 255, 0.3);
+}
+
+/* Login Modal Wrapper */
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    background: rgba(2, 6, 23, 0.6);
+}
+
+.modal-wrapper.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-wrapper .container-3d {
+    transform: translateY(40px) scale(0.9);
+    transition: 0.8s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.modal-wrapper.active .container-3d {
+    transform: translateY(0) scale(1);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1024px) {
+    .hero-title { font-size: 3.5rem; }
+    .nav-header { padding: 20px 30px; }
+    .nav-links { display: none; }
+}

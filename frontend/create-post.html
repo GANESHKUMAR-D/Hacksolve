@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: blobMove 25s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-15%, -15%) scale(1); }
+            100% { transform: translate(15%, 15%) scale(1.2); }
+        }
+
+        .container-3d {
+            width: 100%;
+            max-width: 450px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            padding: 35px;
+            border-radius: 28px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-3d);
+            position: relative;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        h2 {
+            margin: 0 0 8px 0;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to bottom, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        select option {
+            background-color: #1a1a2e;
+            color: #fff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(129, 140, 248, 0.2);
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .preview-box {
+            width: 100%;
+            height: 160px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed var(--glass-border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 25px;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            color: var(--text-muted);
+            border: none;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-cancel:hover {
+            color: #fff;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        #imageInput {
+            opacity: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        .file-label {
+            padding: 8px 16px;
+            background: rgba(129, 140, 248, 0.1);
+            color: var(--primary);
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid rgba(129, 140, 248, 0.2);
+        }
+
+        .file-label:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Global HackSolve Branding -->
+    <a href="/feed" style="position: absolute; top: 25px; left: 30px; display: flex; align-items: center; gap: 12px; text-decoration: none; z-index: 10000;">
+        <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+    </a>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -10s;"></div>
+
+    <div class="container-3d" id="mainContainer">
+        <h2>Share Your Idea</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; font-weight: 500;">Let's spark some innovation today!</p>
+
+        <form id="postForm" enctype="multipart/form-data">
+            <label>Category</label>
+            <select id="category" name="category" required>
+                <option value="Technology">Technology</option>
+                <option value="Innovation">Innovation</option>
+                <option value="Society">Society</option>
+                <option value="Environment">Environment</option>
+                <option value="Health">Health</option>
+                <option value="Education">Education</option>
+                <option value="Open Innovation">Open Innovation</option>
+            </select>
+
+            <label>Idea Visualization</label>
+            <div class="preview-box" id="imagePreview">
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Format size: 16:9 recommended</span>
+            </div>
+            
+            <div class="file-input-wrapper">
+                <label for="imageInput" class="file-label">Choose Image</label>
+                <input type="file" name="image" id="imageInput" accept="image/*">
+            </div>
+
+            <label>Description</label>
+            <textarea name="description" placeholder="What's your groundbreaking idea?" required></textarea>
+
+            <button type="submit">Post Idea</button>
+            <button type="button" onclick="window.location.href='/feed'" class="btn-cancel">Go Back</button>
+        </form>
+    </div>
+
+    <script>
+        const container = document.getElementById('mainContainer');
+        document.addEventListener('mousemove', (e) => {
+            let x = e.clientX / window.innerWidth;
+            let y = e.clientY / window.innerHeight;
+            let moveX = (x - 0.5) * 15;
+            let moveY = (y - 0.5) * -15;
+            container.style.transform = `rotateX(${moveY}deg) rotateY(${moveX}deg) translateZ(10px)`;
+        });
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+                    imagePreview.style.borderStyle = "solid";
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById("postForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = "Posting...";
+
+            try {
+                const formData = new FormData(e.target);
+                formData.append("authorId", user.id);
+                formData.append("authorName", user.name);
+                formData.append("authorRole", user.role);
+
+                const res = await fetch("/api/posts", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = "/feed";
+                } else {
+                    alert("Error: " + data.message);
+                    btn.disabled = false;
+                    btn.innerText = "Post Idea";
+                }
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.innerText = "Post Idea";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding-bottom: 50px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.12;
+            animation: blobMove 30s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-10%, -10%) rotate(0deg); }
+            100% { transform: translate(20%, 20%) rotate(360deg); }
+        }
+
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 45px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 28px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-3d);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card p {
+            margin: 8px 0 0;
+            color: var(--text-muted);
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .tab-menu {
+            display: flex;
+            gap: 40px;
+            border-bottom: 2px solid var(--glass-border);
+            margin-bottom: 35px;
+        }
+
+        .tab-btn {
+            padding: 12px 0;
+            background: none;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-muted);
+            width: auto;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95em;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .management-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .item-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-soft);
+            transition: 0.3s;
+        }
+
+        .item-card:hover {
+            transform: scale(1.01);
+            border-color: rgba(108, 92, 231, 0.2);
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 700;
+            cursor: pointer;
+            width: auto !important;
+            transition: 0.3s;
+        }
+
+        .btn-delete {
+            background: rgba(255, 118, 117, 0.1);
+            color: #ff7675;
+            border: 1px solid rgba(255, 118, 117, 0.2);
+        }
+
+        .btn-delete:hover {
+            background: #ff7675;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 118, 117, 0.3);
+        }
+
+        .top-bar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-pill {
+            background: rgba(255, 118, 117, 0.1);
+            border: 1px solid rgba(255, 118, 117, 0.2);
+            color: #ff7675;
+            padding: 8px 18px;
+            border-radius: 14px;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .logout-pill:hover {
+            background: #ff7675;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Modal for Participants */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-3d);
+        }
+        .participant-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: var(--text-main);
+        }
+        .participant-table th, .participant-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .participant-table th {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .badge-type {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7em;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .badge-solo { background: rgba(129, 140, 248, 0.2); color: var(--primary); }
+        .badge-team { background: rgba(253, 121, 168, 0.2); color: var(--accent); }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -15s; opacity: 0.08;"></div>
+
+    <div class="top-bar">
+        <span class="header-title">Admin Hub</span>
+        <div style="display:flex; gap:25px; align-items:center;">
+            <div style="text-align: right;">
+                <div style="font-weight:800; font-size:1em; color: var(--text-main);" id="adminName">Admin</div>
+                <div style="font-size: 0.75em; color: var(--text-muted); text-transform: uppercase;">System Administrator</div>
+            </div>
+            <a href="#" onclick="logout()" class="logout-pill">Log Out</a>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="statPosts">0</h3>
+                <p>Total Posts</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="statHacks">0</h3>
+                <p>Active Hackathons</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="statUsers">0</h3>
+                <p>Community Members</p>
+            </div>
+        </div>
+
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="switchTab('posts', this)">Moderation (Posts)</button>
+            <button class="tab-btn" onclick="switchTab('hackathons', this)">Events (Hackathons)</button>
+        </div>
+
+        <div id="postsView" class="management-list">
+            <!-- Posts loading here -->
+        </div>
+
+        <div id="hackathonsView" class="management-list" style="display:none;">
+            <div style="text-align:right; margin-bottom:20px;">
+                <button onclick="window.location.href='/create-hackathon'" class="professional-btn" style="width:auto; padding:12px 25px; font-size:0.9em;">+ Create New Hackathon</button>
+            </div>
+            <div id="hackList" style="display: grid; gap: 20px;"></div>
+        </div>
+
+        <!-- Participants Modal -->
+        <div id="participantsModal" class="modal">
+            <div class="modal-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2 id="modalHackName" style="margin:0;">Participants</h2>
+                    <button onclick="closeParticipantsModal()" class="btn-action btn-delete">Close</button>
+                </div>
+                <div id="participantsTableContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || user.role !== 'admin') window.location.href = "/";
+        document.getElementById("adminName").innerText = user.name;
+
+        function logout() { localStorage.clear(); window.location.href = "/"; }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('postsView').style.display = tab === 'posts' ? 'grid' : 'none';
+            document.getElementById('hackathonsView').style.display = tab === 'hackathons' ? 'grid' : 'none';
+            if (tab === 'posts') loadModeration();
+            else loadEvents();
+        }
+
+        async function loadModeration() {
+            try {
+                const res = await fetch("/api/posts");
+                const posts = await res.json();
+                document.getElementById("statPosts").innerText = posts.length;
+                const list = document.getElementById("postsView");
+                list.innerHTML = posts.length === 0 ? "<p style='color:var(--text-muted); padding:40px; text-align:center;'>No posts to moderate.</p>" : "";
+
+                posts.forEach(p => {
+                    list.innerHTML += `
+                        <div class="item-card fade-in">
+                            <div style="flex: 1; padding-right: 20px;">
+                                <div style="font-weight:700; color: var(--text-main);">${p.authorName}</div>
+                                <div style="font-size:0.9em; color:var(--text-muted); margin-top:5px; line-height: 1.4;">${p.description.substring(0, 120)}...</div>
+                                <div style="font-size:0.75em; color:var(--primary); font-weight: 600; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Category: ${p.category} • ${new Date(p.date).toLocaleDateString()}</div>
+                            </div>
+                            <button class="btn-action btn-delete" onclick="deletePost('${p._id}')">Remove</button>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadEvents() {
+            try {
+                const res = await fetch("/api/hackathons");
+                const hacks = await res.json();
+                document.getElementById("statHacks").innerText = hacks.length;
+                const container = document.getElementById("hackList");
+                container.innerHTML = hacks.length === 0 ? "<p style='color:var(--text-muted); padding:40px; text-align:center;'>No hackathons created yet.</p>" : "";
+
+                hacks.forEach(h => {
+                    container.innerHTML += `
+                        <div class="item-card fade-in">
+                            <div style="flex: 1;">
+                                <div style="font-weight:700; font-size:1.15em; color: var(--text-main);">${h.name}</div>
+                                <div style="font-size:0.85em; color:var(--primary); font-weight: 600; margin-top: 4px;">${h.organizerName}</div>
+                                <div style="font-size:0.8em; color:var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 5px;">
+                                    <span>👥</span> ${h.participants.length} Participants enrolled
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:12px;">
+                                <button class="btn-action" style="background:rgba(129, 140, 248, 0.1); color:var(--primary); border:1px solid rgba(129, 140, 248, 0.2);" onclick="viewParticipants('${h._id}', '${h.name}')">View Participants</button>
+                                <button class="btn-action" style="background:rgba(255, 255, 255, 0.05); color:var(--text-main); border:1px solid var(--glass-border);" onclick="window.location.href='/hackathon-details?id=${h._id}'">Manage</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function deletePost(id) {
+            if (!confirm("Are you sure you want to remove this post?")) return;
+            const res = await fetch("/api/posts/" + id, { method: "DELETE" });
+            const data = await res.json();
+            if (data.success) loadModeration();
+        }
+
+        async function viewParticipants(hackId, hackName) {
+            document.getElementById("modalHackName").innerText = "Participants for " + hackName;
+            document.getElementById("participantsModal").style.display = "flex";
+            const container = document.getElementById("participantsTableContainer");
+            container.innerHTML = "<p style='color:var(--text-muted);'>Loading participants...</p>";
+
+            try {
+                const res = await fetch(`/api/hackathons/${hackId}/applications`);
+                const apps = await res.json();
+
+                if (apps.length === 0) {
+                    container.innerHTML = "<p style='color:var(--text-muted); padding:20px; text-align:center;'>No participants applied yet.</p>";
+                    return;
+                }
+
+                let html = `
+                    <table class="participant-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Team Name / Details</th>
+                                <th>Org / College</th>
+                                <th>Applied At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                apps.forEach(app => {
+                    const typeBadge = app.type === 'solo' ? `<span class="badge-type badge-solo">Solo</span>` : `<span class="badge-type badge-team">Team</span>`;
+                    const teamInfo = app.type === 'team' ? 
+                        `<b>${app.teamName}</b><br><small>${app.teamMembersCount} members: ${app.teamMembersNames}</small>` : 
+                        `<span style="color:var(--text-muted);">N/A</span>`;
+
+                    html += `
+                        <tr>
+                            <td><b>${app.userName}</b></td>
+                            <td>${typeBadge}</td>
+                            <td>${teamInfo}</td>
+                            <td>${app.companyCollegeName}</td>
+                            <td>${new Date(app.appliedAt).toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = "<p style='color:#ff7675;'>Error loading participants.</p>";
+            }
+        }
+
+        function closeParticipantsModal() {
+            document.getElementById("participantsModal").style.display = "none";
+        }
+
+        loadModeration();
+        loadEvents();
+    </script>
+</body>
+</html>

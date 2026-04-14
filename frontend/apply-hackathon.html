@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Hackathon - HackSolve</title>
+    <link rel="stylesheet" href="public/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-darker);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .bg-blob {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            filter: blur(150px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: blobMove 20s infinite alternate;
+        }
+
+        @keyframes blobMove {
+            0% { transform: translate(-10%, -10%) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
+        }
+
+        .container-3d {
+            width: 100%;
+            max-width: 550px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-3d);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        h2 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .hackathon-name {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            font-size: 1rem;
+            color: var(--text-main);
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(129, 140, 248, 0.2);
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            color: var(--text-main);
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Global HackSolve Branding -->
+    <a href="/feed" style="position: absolute; top: 25px; left: 30px; display: flex; align-items: center; gap: 12px; text-decoration: none; z-index: 10000;">
+        <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary, #818cf8) 0%, var(--accent, #fb7185) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(129, 140, 248, 0.4);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span style="font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #fb7185); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">HackSolve</span>
+    </a>
+    <div class="bg-blob"></div>
+    <div class="bg-blob" style="bottom: -10%; right: -10%; background: var(--accent); animation-delay: -10s;"></div>
+
+    <div class="container-3d" id="applyFormContainer">
+        <h2>Register for Hackathon</h2>
+        <div class="hackathon-name" id="displayHackName">Loading...</div>
+
+        <form id="applyForm">
+            <div class="form-group">
+                <label>Participation Mode</label>
+                <select id="appType" onchange="toggleTeamFields()" required>
+                    <option value="solo">Solo Participation</option>
+                    <option value="team">Represent a Team</option>
+                </select>
+            </div>
+
+            <div id="teamFields" class="hidden">
+                <div class="form-group">
+                    <label>Team Name</label>
+                    <input type="text" id="appTeamName" placeholder="Enter your team's unique name">
+                </div>
+                <div class="grid-layout" style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Members Count</label>
+                        <input type="number" id="appTeamCount" placeholder="e.g. 4" min="2" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Teammates Names</label>
+                        <input type="text" id="appTeamMembers" placeholder="Separated by commas">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Company / College Name</label>
+                <input type="text" id="appOrg" placeholder="e.g. Stanford University" required>
+            </div>
+
+            <div class="form-group">
+                <label>Any Additional Details?</label>
+                <textarea id="appDetails" placeholder="Tell us about your team or project idea (Optional)"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Confirm Registration</button>
+            <a href="javascript:history.back()" class="btn-back">Cancel and Go Back</a>
+        </form>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) window.location.href = "/";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const hackId = urlParams.get('id');
+
+        if (!hackId) window.location.href = "/hackathons";
+
+        async function initPage() {
+            try {
+                const res = await fetch(`/api/hackathons/${hackId}`);
+                const h = await res.json();
+                if (h) {
+                    document.getElementById("displayHackName").innerText = h.name;
+                    document.title = `Apply for ${h.name} - HackSolve`;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function toggleTeamFields() {
+            const type = document.getElementById("appType").value;
+            const teamFields = document.getElementById("teamFields");
+            if (type === "team") {
+                teamFields.classList.remove("hidden");
+                document.getElementById("appTeamName").required = true;
+                document.getElementById("appTeamCount").required = true;
+                document.getElementById("appTeamMembers").required = true;
+            } else {
+                teamFields.classList.add("hidden");
+                document.getElementById("appTeamName").required = false;
+                document.getElementById("appTeamCount").required = false;
+                document.getElementById("appTeamMembers").required = false;
+            }
+        }
+
+        document.getElementById("applyForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+
+            const type = document.getElementById("appType").value;
+            const body = {
+                user_id: user.id,
+                type: type,
+                companyCollegeName: document.getElementById("appOrg").value,
+                otherDetails: document.getElementById("appDetails").value
+            };
+
+            if (type === "team") {
+                body.teamName = document.getElementById("appTeamName").value;
+                body.teamMembersCount = document.getElementById("appTeamCount").value;
+                body.teamMembersNames = document.getElementById("appTeamMembers").value;
+            }
+
+            try {
+                const res = await fetch(`/api/hackathons/${hackId}/join`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert("Registration Successful!");
+                    window.location.href = `/hackathon-details?id=${hackId}`;
+                } else {
+                    alert("Error: " + data.message);
+                    btn.disabled = false;
+                    btn.innerText = "Confirm Registration";
+                }
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred during registration.");
+                btn.disabled = false;
+                btn.innerText = "Confirm Registration";
+            }
+        });
+
+        const container = document.getElementById('applyFormContainer');
+        document.addEventListener('mousemove', (e) => {
+            let x = (window.innerWidth / 2 - e.pageX) / 25;
+            let y = (window.innerHeight / 2 - e.pageY) / 25;
+            container.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+
+        initPage();
+    </script>
+</body>
+</html>
