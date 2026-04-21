@@ -354,18 +354,21 @@
                 container.innerHTML = hacks.length === 0 ? "<p style='color:var(--text-muted); padding:40px; text-align:center;'>No hackathons created yet.</p>" : "";
 
                 hacks.forEach(h => {
+                    const pendingApps = h.applications ? h.applications.filter(a => a.status === 'pending').length : 0;
+                    
                     container.innerHTML += `
                         <div class="item-card fade-in">
                             <div style="flex: 1;">
                                 <div style="font-weight:700; font-size:1.15em; color: var(--text-main);">${h.name}</div>
                                 <div style="font-size:0.85em; color:var(--primary); font-weight: 600; margin-top: 4px;">${h.organizerName}</div>
-                                <div style="font-size:0.8em; color:var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 5px;">
-                                    <span>👥</span> ${h.participants.length} Participants enrolled
+                                <div style="font-size:0.8em; color:var(--text-muted); margin-top: 8px; display: flex; flex-wrap: wrap; gap: 15px;">
+                                    <span>👥 ${h.participants.length} Enrolled</span>
+                                    <span style="color:${pendingApps > 0 ? 'var(--accent)' : 'var(--text-muted)'}; font-weight:${pendingApps > 0 ? '700' : '400'}">📩 ${pendingApps} Applied (Pending)</span>
                                 </div>
                             </div>
-                            <div style="display:flex; gap:12px;">
-                                <button class="btn-action" style="background:rgba(129, 140, 248, 0.1); color:var(--primary); border:1px solid rgba(129, 140, 248, 0.2);" onclick="viewParticipants('${h._id}', '${h.name}')">View Participants</button>
-                                <button class="btn-action" style="background:rgba(255, 255, 255, 0.05); color:var(--text-main); border:1px solid var(--glass-border);" onclick="window.location.href='/hackathon-details?id=${h._id}'">Manage</button>
+                            <div style="display:flex; gap:12px; flex-wrap: wrap; justify-content: flex-end;">
+                                <button class="btn-action" style="background:rgba(129, 140, 248, 0.1); color:var(--primary); border:1px solid rgba(129, 140, 248, 0.2);" onclick="viewParticipants('${h._id}', '${h.name}')">Participants & Approvals</button>
+                                <button class="btn-action" style="background:rgba(255, 255, 255, 0.05); color:var(--text-main); border:1px solid var(--glass-border);" onclick="window.location.href='/hackathon-details?id=${h._id}'">Manage / Announce</button>
                             </div>
                         </div>
                     `;
@@ -381,56 +384,121 @@
         }
 
         async function viewParticipants(hackId, hackName) {
-            document.getElementById("modalHackName").innerText = "Participants for " + hackName;
+            document.getElementById("modalHackName").innerText = "Management: " + hackName;
             document.getElementById("participantsModal").style.display = "flex";
             const container = document.getElementById("participantsTableContainer");
-            container.innerHTML = "<p style='color:var(--text-muted);'>Loading participants...</p>";
+            container.innerHTML = "<p style='color:var(--text-muted);'>Loading...</p>";
 
             try {
                 const res = await fetch(`/api/hackathons/${hackId}/applications`);
                 const apps = await res.json();
 
-                if (apps.length === 0) {
-                    container.innerHTML = "<p style='color:var(--text-muted); padding:20px; text-align:center;'>No participants applied yet.</p>";
-                    return;
-                }
+                const pendingApps = apps.filter(a => a.status === 'pending');
+                const joinedApps = apps.filter(a => a.status === 'joined');
 
                 let html = `
-                    <table class="participant-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Team Name / Details</th>
-                                <th>Org / College</th>
-                                <th>Applied At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="tab-menu" style="margin-top:20px; border-bottom:1px solid var(--glass-border);">
+                        <button class="tab-btn active" id="btnTabApplied" onclick="switchParticipantsTab('applied')">Applied (${pendingApps.length})</button>
+                        <button class="tab-btn" id="btnTabJoined" onclick="switchParticipantsTab('joined')">Joined (${joinedApps.length})</button>
+                    </div>
+                    
+                    <div id="appliedSection" class="tab-content">
+                        ${pendingApps.length === 0 ? "<p style='color:var(--text-muted); padding:30px; text-align:center;'>No pending applications.</p>" : `
+                        <table class="participant-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Details</th>
+                                    <th>Org/College</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${pendingApps.map(app => `
+                                    <tr>
+                                        <td><b>${app.userName}</b></td>
+                                        <td>${app.type === 'solo' ? 'Solo' : `Team: ${app.teamName}`}</td>
+                                        <td>${app.companyCollegeName}</td>
+                                        <td>
+                                            <div style="display:flex; gap:8px;">
+                                                <button class="btn-action" style="background:#00b894; color:white; padding:5px 12px;" onclick="approveApp('${hackId}', '${app._id}')">Join</button>
+                                                <button class="btn-action" style="background:#ff7675; color:white; padding:5px 12px;" onclick="rejectApp('${hackId}', '${app._id}')">Cancel</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        `}
+                    </div>
+
+                    <div id="joinedSection" class="tab-content" style="display:none;">
+                        ${joinedApps.length === 0 ? "<p style='color:var(--text-muted); padding:30px; text-align:center;'>No joined participants yet.</p>" : `
+                        <table class="participant-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Details</th>
+                                    <th>Org/College</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${joinedApps.map(app => `
+                                    <tr>
+                                        <td><b>${app.userName}</b></td>
+                                        <td>${app.type === 'solo' ? 'Solo' : `Team: ${app.teamName}`}</td>
+                                        <td>${app.companyCollegeName}</td>
+                                        <td>
+                                            <button class="btn-action btn-delete" style="padding:5px 12px;" onclick="removeParticipant('${hackId}', '${app.userId}')">Remove</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        `}
+                    </div>
                 `;
-
-                apps.forEach(app => {
-                    const typeBadge = app.type === 'solo' ? `<span class="badge-type badge-solo">Solo</span>` : `<span class="badge-type badge-team">Team</span>`;
-                    const teamInfo = app.type === 'team' ? 
-                        `<b>${app.teamName}</b><br><small>${app.teamMembersCount} members: ${app.teamMembersNames}</small>` : 
-                        `<span style="color:var(--text-muted);">N/A</span>`;
-
-                    html += `
-                        <tr>
-                            <td><b>${app.userName}</b></td>
-                            <td>${typeBadge}</td>
-                            <td>${teamInfo}</td>
-                            <td>${app.companyCollegeName}</td>
-                            <td>${new Date(app.appliedAt).toLocaleDateString()}</td>
-                        </tr>
-                    `;
-                });
-
-                html += `</tbody></table>`;
                 container.innerHTML = html;
             } catch (err) {
                 console.error(err);
-                container.innerHTML = "<p style='color:#ff7675;'>Error loading participants.</p>";
+                container.innerHTML = "<p style='color:#ff7675;'>Error loading data.</p>";
+            }
+        }
+
+        function switchParticipantsTab(tab) {
+            document.getElementById('appliedSection').style.display = tab === 'applied' ? 'block' : 'none';
+            document.getElementById('joinedSection').style.display = tab === 'joined' ? 'block' : 'none';
+            document.getElementById('btnTabApplied').classList.toggle('active', tab === 'applied');
+            document.getElementById('btnTabJoined').classList.toggle('active', tab === 'joined');
+        }
+
+        async function approveApp(hackId, appId) {
+            const res = await fetch(`/api/hackathons/${hackId}/applications/${appId}/approve`, { method: "POST" });
+            const data = await res.json();
+            if (data.success) {
+                loadEvents();
+                viewParticipants(hackId, document.getElementById("modalHackName").innerText.replace("Management: ", ""));
+            }
+        }
+
+        async function rejectApp(hackId, appId) {
+            if (!confirm("Reject this application?")) return;
+            const res = await fetch(`/api/hackathons/${hackId}/applications/${appId}/reject`, { method: "POST" });
+            const data = await res.json();
+            if (data.success) {
+                loadEvents();
+                viewParticipants(hackId, document.getElementById("modalHackName").innerText.replace("Management: ", ""));
+            }
+        }
+
+        async function removeParticipant(hackId, userId) {
+            if (!confirm("Are you sure you want to remove this participant?")) return;
+            const res = await fetch(`/api/hackathons/${hackId}/participants/${userId}`, { method: "DELETE" });
+            const data = await res.json();
+            if (data.success) {
+                loadEvents();
+                viewParticipants(hackId, document.getElementById("modalHackName").innerText.replace("Management: ", ""));
             }
         }
 

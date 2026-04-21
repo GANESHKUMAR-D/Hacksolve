@@ -254,16 +254,20 @@
                 const isJoined = h.participants && h.participants.includes(user.id);
                 const joinBtn = document.getElementById("joinBtn");
 
-                if (isJoined || (user.role === 'admin' && h.organizerId === user.id)) {
+                if (isJoined || user.role === 'admin') {
                     if (isJoined) {
                         joinBtn.innerText = "Applied Successfully ✅";
                         joinBtn.disabled = true;
-                    } else {
+                    } else if (user.role === 'admin') {
                         joinBtn.style.display = 'none';
                     }
                     document.getElementById("exploreBtn").style.display = "block";
                     document.getElementById("exploreBtn").dataset.category = h.category;
                     document.getElementById("announcementSection").style.display = "block";
+                    
+                    if (user.role === 'admin') {
+                        document.getElementById("adminControls").style.display = "block";
+                    }
                 }
 
                 const annList = document.getElementById("announcementList");

@@ -10,7 +10,8 @@ const hackathonApplicationSchema = new mongoose.Schema({
     teamMembersNames: String,
     companyCollegeName: String,
     otherDetails: String,
-    appliedAt: { type: Date, default: Date.now }
+    appliedAt: { type: Date, default: Date.now },
+    status: { type: String, enum: ["pending", "joined", "cancelled"], default: "pending" }
 });
 
 module.exports = mongoose.model("HackathonApplication", hackathonApplicationSchema);

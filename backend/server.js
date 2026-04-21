@@ -418,35 +418,83 @@ app.get("/api/hackathons/:id", async (req, res) => {
 app.post("/api/hackathons/:id/join", async (req, res) => {
     const { user_id, type, teamName, teamMembersCount, teamMembersNames, companyCollegeName, otherDetails } = req.body;
     try {
-        const hackathon = await Hackathon.findById(req.params.id);
         const user = await User.findById(user_id);
         
-        if (!hackathon.participants.includes(user_id)) {
-            hackathon.participants.push(user_id);
-            await hackathon.save();
+        // Create pending application
+        const application = new HackathonApplication({
+            hackathonId: req.params.id,
+            userId: user_id,
+            userName: user.name,
+            type,
+            teamName,
+            teamMembersCount,
+            teamMembersNames,
+            companyCollegeName,
+            otherDetails,
+            status: "pending"
+        });
+        await application.save();
 
-            // Create detailed application record
-            const application = new HackathonApplication({
-                hackathonId: req.params.id,
-                userId: user_id,
-                userName: user.name,
-                type,
-                teamName,
-                teamMembersCount,
-                teamMembersNames,
-                companyCollegeName,
-                otherDetails
-            });
-            await application.save();
-
-            // Also update user's joined hackathons
-            await User.findByIdAndUpdate(user_id, { $addToSet: { appliedHackathons: hackathon._id } });
-        }
-        res.json({ success: true, message: "Joined successfully" });
+        res.json({ success: true, message: "Application submitted. Waiting for admin approval." });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
+app.post("/api/hackathons/:id/applications/:appId/approve", async (req, res) => {
+    try {
+        const application = await HackathonApplication.findById(req.params.appId);
+        if (!application) return res.status(404).json({ success: false, message: "Application not found" });
+
+        application.status = "joined";
+        await application.save();
+
+        // Add to hackathon participants
+        await Hackathon.findByIdAndUpdate(req.params.id, { $addToSet: { participants: application.userId } });
+        
+        // Add to user's applied hackathons
+        await User.findByIdAndUpdate(application.userId, { $addToSet: { appliedHackathons: req.params.id } });
+
+        res.json({ success: true, message: "Application approved" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post("/api/hackathons/:id/applications/:appId/reject", async (req, res) => {
+    try {
+        const application = await HackathonApplication.findById(req.params.appId);
+        if (!application) return res.status(404).json({ success: false, message: "Application not found" });
+
+        application.status = "cancelled";
+        await application.save();
+
+        res.json({ success: true, message: "Application rejected" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete("/api/hackathons/:id/participants/:userId", async (req, res) => {
+    try {
+        // Remove from hackathon
+        await Hackathon.findByIdAndUpdate(req.params.id, { $pull: { participants: req.params.userId } });
+        
+        // Remove from user
+        await User.findByIdAndUpdate(req.params.userId, { $pull: { appliedHackathons: req.params.id } });
+
+        // Update application status back to cancelled
+        await HackathonApplication.findOneAndUpdate(
+            { hackathonId: req.params.id, userId: req.params.userId, status: "joined" },
+            { status: "cancelled" }
+        );
+
+        res.json({ success: true, message: "Participant removed" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 app.get("/api/hackathons/:id/applications", async (req, res) => {
     try {
